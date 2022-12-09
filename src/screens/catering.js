@@ -12,7 +12,11 @@ import {Reaptcha} from 'components/reaptcha'
 function CateringForm({captchaRef, onSubmit, submitButton}) {
   const {register, control, handleSubmit, formState: {isSubmitSuccessful, errors}} = useForm()
 
-  const [captchaToken, setCaptchaToken] = React.useState(null)
+  const [captchaToken, setCaptchaToken] = React.useState(
+    process.env.REACT_APP_ENVIRONMENT === 'development' 
+    ? 'test-token'
+    : null
+  )
 
   // Captcha onVerify
   const onVerify = () => {
@@ -199,8 +203,9 @@ function CateringForm({captchaRef, onSubmit, submitButton}) {
               validate={{...register('phone', {
                 required: 'Phone number is required.',
                 pattern: {
-                  value: /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/,
-                  message: 'Valid number is required e.g. 555-555-5555.'
+                  // Phone number format: Optional +, parenthesis, dashes, periods, or spaces 
+                  value: /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/,
+                  message: 'Valid phone number is required.'
                 }
               })}}
             />
@@ -362,7 +367,6 @@ function CateringForm({captchaRef, onSubmit, submitButton}) {
           </div>
         </FormGroup>
 
-        
         {/* ReCAPTCHA */}
         <Reaptcha
           isVerified={requestSent}
@@ -438,7 +442,8 @@ function CateringScreen() {
       <CateringForm 
         captchaRef={captchaRef}
         onSubmit={requestCatering} 
-        submitButton={<Button/>} />
+        submitButton={<Button/>} 
+      />
     </div>
   )
 }
